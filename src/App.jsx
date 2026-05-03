@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import HeroCanvas from "./HeroCanvas.jsx";
+import EventsCarousel from "./EventsCarousel.jsx";
+import ContactRotatingBlurb from "./ContactRotatingBlurb.jsx";
 
 const LINKS = [
   ["About", "#about"],
@@ -17,14 +19,31 @@ function aboutInViewRatio(el) {
   return visible / r.height;
 }
 
+/** True when the hero covers most of the viewport (user is effectively “on” hero). */
+function heroDominatesViewport(hero) {
+  if (!hero) return false;
+  const r = hero.getBoundingClientRect();
+  const vh = window.innerHeight;
+  const visible = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+  if (visible <= 0) return false;
+  return visible / vh > 0.52;
+}
+
 export default function App() {
+  const heroRef = useRef(null);
   const aboutRef = useRef(null);
+  const navUnlockedRef = useRef(false);
   const [navOn, setNavOn] = useState(false);
 
   useEffect(() => {
-    const el = aboutRef.current;
-    const tick = () =>
-      setNavOn(!!el && aboutInViewRatio(el) >= 0.5);
+    const tick = () => {
+      const about = aboutRef.current;
+      const hero = heroRef.current;
+      if (about && aboutInViewRatio(about) >= 0.5) {
+        navUnlockedRef.current = true;
+      }
+      setNavOn(navUnlockedRef.current && !heroDominatesViewport(hero));
+    };
     tick();
     window.addEventListener("scroll", tick, { passive: true });
     window.addEventListener("resize", tick);
@@ -51,6 +70,7 @@ export default function App() {
 
       <main>
         <section
+          ref={heroRef}
           id="hero"
           className="section section--hero"
           aria-label="Hero"
@@ -203,11 +223,18 @@ export default function App() {
           <p className="scaffold">Offerings — TBD.</p>
         </section>
 
-        <section id="events" className="section" aria-labelledby="events-heading">
+        <section
+          id="events"
+          className="section section--events"
+          aria-labelledby="events-heading"
+        >
           <h2 id="events-heading" className="section-title">
             Events
           </h2>
-          <p className="scaffold">Dates & venues — TBD.</p>
+          <p className="events-intro scaffold">
+            Upcoming workshops and sessions — flyer artwork coming soon.
+          </p>
+          <EventsCarousel />
         </section>
 
         <section
@@ -215,35 +242,51 @@ export default function App() {
           className="section section--contact"
           aria-labelledby="contact-heading"
         >
-          <h2 id="contact-heading" className="section-title">
-            Contact
-          </h2>
-          <p className="scaffold">We’ll get back to you shortly.</p>
-          <form
-            className="contactForm"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <label>
-              Name
-              <input name="name" autoComplete="name" required />
-            </label>
-            <label>
-              Email
-              <input
-                type="email"
-                name="email"
-                autoComplete="email"
-                required
-              />
-            </label>
-            <label>
-              Message
-              <textarea name="message" rows={4} required />
-            </label>
-            <button type="submit" className="cta cta--block">
-              Send message
-            </button>
-          </form>
+          <div className="contactHeader">
+            <h2 id="contact-heading" className="section-title">
+              Contact
+            </h2>
+            <p className="scaffold section--contact-lede">
+              We’ll get back to you shortly.
+            </p>
+          </div>
+
+          <div className="contactSplit">
+            <div className="contactBlurbCol">
+              <ContactRotatingBlurb />
+            </div>
+            <div className="contactFormCol">
+              <div className="contactPanelOuter">
+                <div className="contactPanel">
+                  <form
+                    className="contactForm"
+                    onSubmit={(e) => e.preventDefault()}
+                  >
+                    <label>
+                      Name
+                      <input name="name" autoComplete="name" required />
+                    </label>
+                    <label>
+                      Email
+                      <input
+                        type="email"
+                        name="email"
+                        autoComplete="email"
+                        required
+                      />
+                    </label>
+                    <label>
+                      Message
+                      <textarea name="message" rows={4} required />
+                    </label>
+                    <button type="submit" className="cta cta--block cta--panel">
+                      Send message
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
     </>
