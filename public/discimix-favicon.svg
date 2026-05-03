@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="dGrad" x1="0%" y1="0%" x2="60%" y2="100%">
+      <stop offset="0%" style="stop-color:#CC33FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9333EA;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="nodeGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="dGlow" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- D letter — pushed right, leaving room for neural net on left -->
+  <!-- Outer D: x 195–468, y 58–454 -->
+  <!-- Inner cutout: x 262–398, y 116–396 -->
+  <path
+    d="M195,58 L195,454 L308,454 C478,454 478,58 308,58 Z
+       M262,116 L262,396 L308,396 C398,396 398,116 308,116 Z"
+    fill="url(#dGrad)"
+    fill-rule="evenodd"
+    filter="url(#dGlow)"
+  />
+
+  <!-- Neural network lines — all LEFT of x≈195 -->
+  <!-- Nodes: A(52,178) B(122,125) C(182,208) D(92,260) E(45,312) F(138,338) G(108,215) -->
+  <g stroke="#DD44FF" stroke-width="2.2" opacity="0.65" filter="url(#glow)">
+    <line x1="52"  y1="178" x2="122" y2="125"/>
+    <line x1="122" y1="125" x2="182" y2="208"/>
+    <line x1="52"  y1="178" x2="182" y2="208"/>
+    <line x1="52"  y1="178" x2="92"  y2="260"/>
+    <line x1="182" y1="208" x2="92"  y2="260"/>
+    <line x1="92"  y1="260" x2="45"  y2="312"/>
+    <line x1="92"  y1="260" x2="138" y2="338"/>
+    <line x1="45"  y1="312" x2="138" y2="338"/>
+    <line x1="182" y1="208" x2="138" y2="338"/>
+    <line x1="52"  y1="178" x2="45"  y2="312"/>
+    <line x1="108" y1="215" x2="92"  y2="260"/>
+    <line x1="52"  y1="178" x2="108" y2="215"/>
+    <line x1="108" y1="215" x2="182" y2="208"/>
+  </g>
+
+  <!-- Neural network nodes -->
+  <g filter="url(#nodeGlow)">
+    <circle cx="52"  cy="178" r="8"   fill="#EE55FF"/>
+    <circle cx="122" cy="125" r="7"   fill="#DD44EE"/>
+    <circle cx="182" cy="208" r="8"   fill="#EE55FF"/>
+    <circle cx="92"  cy="260" r="9"   fill="#CC33DD"/>
+    <circle cx="45"  cy="312" r="7"   fill="#DD44EE"/>
+    <circle cx="138" cy="338" r="7.5" fill="#EE55FF"/>
+    <circle cx="108" cy="215" r="6"   fill="#DD44EE"/>
+  </g>
+
+</svg>
