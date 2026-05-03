@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import HeroCanvas from "./HeroCanvas.jsx";
 import EventsCarousel from "./EventsCarousel.jsx";
+import EventsAmbient from "./EventsAmbient.jsx";
 import ContactRotatingBlurb from "./ContactRotatingBlurb.jsx";
 
 const LINKS = [
@@ -8,6 +9,15 @@ const LINKS = [
   ["Services", "#services"],
   ["Events", "#events"],
   ["Contact", "#contact"],
+];
+
+const SERVICE_WORKSHOP_CHIPS = [
+  "UI/UX Design",
+  "AI Prompt Engineering",
+  "Python Programming",
+  "Coding with AI Tools",
+  "Stakeholder Communication",
+  "English Proficiency",
 ];
 
 /** Share of the about section’s height that intersects the viewport (0–1). */
@@ -216,11 +226,79 @@ export default function App() {
           </div>
         </section>
 
-        <section id="services" className="section" aria-labelledby="services-heading">
-          <h2 id="services-heading" className="section-title">
+        <section
+          id="services"
+          className="section section--services"
+          aria-labelledby="services-heading"
+        >
+          <h2 id="services-heading" className="section-title section-title--services">
             Services
           </h2>
-          <p className="scaffold">Offerings — TBD.</p>
+          <p className="services-lede">
+            Strategy, analytics, and training built for teams that want clarity and
+            momentum.
+          </p>
+          <div className="servicesRow">
+            <article className="serviceCard">
+              <div className="serviceCard-iconWrap" aria-hidden="true">
+                <svg
+                  className="serviceCard-iconSvg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 5v14M8 15l4 4 4-4"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <h3 className="serviceCard-title">Consultancy &amp; Analytics</h3>
+              <p className="serviceCard-body">
+                In-depth KPI/ROI analysis, Instagram performance audits, content
+                strategy optimization, and clear actionable growth recommendations for
+                small businesses and digital entrepreneurs.
+              </p>
+              <div className="serviceCard-line" aria-hidden="true" />
+            </article>
+            <article className="serviceCard">
+              <div className="serviceCard-iconWrap" aria-hidden="true">
+                <svg
+                  className="serviceCard-iconSvg serviceCard-iconSvg--fill"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z" />
+                </svg>
+              </div>
+              <h3 className="serviceCard-title">Workshops &amp; Training</h3>
+              <p className="serviceCard-body">
+                Personalized skill-building sessions tailored to each participant&apos;s
+                level and objectives, ensuring practical learning outcomes immediately
+                applicable in real-world scenarios.
+              </p>
+              <p className="visually-hidden" id="services-workshop-topics">
+                Workshop topics include{" "}
+                {SERVICE_WORKSHOP_CHIPS.join(", ")}.
+              </p>
+              <div className="serviceCard-tickerMask" aria-hidden="true">
+                <div className="serviceCard-ticker">
+                  {[0, 1].map((dup) => (
+                    <div key={dup} className="serviceCard-tickerGroup">
+                      {SERVICE_WORKSHOP_CHIPS.map((label) => (
+                        <span key={`${dup}-${label}`} className="serviceCard-chip">
+                          {label}
+                        </span>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </article>
+          </div>
         </section>
 
         <section
@@ -228,6 +306,7 @@ export default function App() {
           className="section section--events"
           aria-labelledby="events-heading"
         >
+          <EventsAmbient />
           <h2 id="events-heading" className="section-title">
             Events
           </h2>
@@ -244,7 +323,7 @@ export default function App() {
         >
           <div className="contactHeader">
             <h2 id="contact-heading" className="section-title">
-              Contact
+              Contact Us
             </h2>
             <p className="scaffold section--contact-lede">
               We’ll get back to you shortly.

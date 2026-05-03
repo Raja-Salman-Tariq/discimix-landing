@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 const SLIDES = [
   { id: "flyer-1", label: "Event flyer placeholder 1" },
@@ -8,8 +8,55 @@ const SLIDES = [
 ];
 
 export default function EventsCarousel() {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(1);
   const n = SLIDES.length;
+  const viewportRef = useRef(null);
+  const trackRef = useRef(null);
+  const [tx, setTx] = useState(0);
+  const [motionOk, setMotionOk] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  const recompute = useCallback(() => {
+    const vp = viewportRef.current;
+    const tr = trackRef.current;
+    if (!vp || !tr) return;
+    const items = tr.querySelectorAll(".eventsCarousel-slideItem");
+    if (items.length < 2) return;
+    const first = items[0];
+    const second = items[1];
+    const w = first.getBoundingClientRect().width;
+    const gap =
+      second.getBoundingClientRect().left -
+      first.getBoundingClientRect().left -
+      w;
+    const vw = vp.getBoundingClientRect().width;
+    setTx(vw / 2 - w / 2 - index * (w + gap));
+  }, [index]);
+
+  useLayoutEffect(() => {
+    recompute();
+    const vp = viewportRef.current;
+    const ro = new ResizeObserver(() => recompute());
+    if (vp) ro.observe(vp);
+    window.addEventListener("resize", recompute);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", recompute);
+    };
+  }, [recompute]);
+
+  useLayoutEffect(() => {
+    const rm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setReducedMotion(rm);
+    if (rm) {
+      setMotionOk(true);
+      return undefined;
+    }
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setMotionOk(true));
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const go = useCallback(
     (delta) => {
@@ -17,15 +64,6 @@ export default function EventsCarousel() {
     },
     [n]
   );
-
-  const left = (index - 1 + n) % n;
-  const center = index;
-  const right = (index + 1) % n;
-  const trio = [
-    { slideIndex: left, role: "side", key: "left" },
-    { slideIndex: center, role: "center", key: "center" },
-    { slideIndex: right, role: "side", key: "right" },
-  ];
 
   const onRegionKeyDown = (e) => {
     if (e.key === "ArrowLeft") {
@@ -36,6 +74,14 @@ export default function EventsCarousel() {
       e.preventDefault();
       go(1);
     }
+  };
+
+  const trackStyle = {
+    transform: `translate3d(${tx}px, 0, 0)`,
+    transition:
+      motionOk && !reducedMotion
+        ? "transform 0.48s cubic-bezier(0.22, 1, 0.36, 1)"
+        : "none",
   };
 
   return (
@@ -57,37 +103,35 @@ export default function EventsCarousel() {
           <span aria-hidden="true">‹</span>
         </button>
 
-        <div className="eventsCarousel-viewport">
-          <ul className="eventsCarousel-strip">
-            {trio.map(({ slideIndex, role, key }) => {
-              const i = slideIndex;
-              return (
-                <li
-                  key={key}
-                  className={`eventsCarousel-cell eventsCarousel-cell--${role}`}
-                  aria-current={role === "center" ? "true" : undefined}
-                  aria-label={SLIDES[i].label}
+        <div ref={viewportRef} className="eventsCarousel-viewport">
+          <ul ref={trackRef} className="eventsCarousel-track" style={trackStyle}>
+            {SLIDES.map((slide, i) => (
+              <li
+                key={slide.id}
+                className={`eventsCarousel-slideItem${i === index ? " is-selected" : ""}`}
+                aria-current={i === index ? "true" : undefined}
+                aria-hidden={i !== index}
+                aria-label={slide.label}
+              >
+                <div
+                  className="eventsFlyerPlaceholder"
+                  data-variant={String((i % 4) + 1)}
                 >
-                  <div
-                    className="eventsFlyerPlaceholder"
-                    data-variant={String((i % 4) + 1)}
-                  >
-                    <span className="eventsFlyerPlaceholder-brand">
-                      Discimix
-                    </span>
-                    <span className="eventsFlyerPlaceholder-title">
-                      Event flyer
-                    </span>
-                    <span className="eventsFlyerPlaceholder-sub">
-                      Placeholder — replace with final artwork
-                    </span>
-                    <span className="eventsFlyerPlaceholder-meta">
-                      Date &amp; venue TBA
-                    </span>
-                  </div>
-                </li>
-              );
-            })}
+                  <span className="eventsFlyerPlaceholder-brand">
+                    Discimix
+                  </span>
+                  <span className="eventsFlyerPlaceholder-title">
+                    Event flyer
+                  </span>
+                  <span className="eventsFlyerPlaceholder-sub">
+                    Placeholder — replace with final artwork
+                  </span>
+                  <span className="eventsFlyerPlaceholder-meta">
+                    Date &amp; venue TBA
+                  </span>
+                </div>
+              </li>
+            ))}
           </ul>
         </div>
 
