@@ -24,6 +24,66 @@ body {
   min-height: 100dvh;
 }
 
+@property --ox1 { syntax: "<percentage>"; inherits: false; initial-value: 18%; }
+@property --oy1 { syntax: "<percentage>"; inherits: false; initial-value: 28%; }
+@property --ox2 { syntax: "<percentage>"; inherits: false; initial-value: 78%; }
+@property --oy2 { syntax: "<percentage>"; inherits: false; initial-value: 22%; }
+@property --ox3 { syntax: "<percentage>"; inherits: false; initial-value: 48%; }
+@property --oy3 { syntax: "<percentage>"; inherits: false; initial-value: 72%; }
+@property --ox4 { syntax: "<percentage>"; inherits: false; initial-value: 88%; }
+@property --oy4 { syntax: "<percentage>"; inherits: false; initial-value: 68%; }
+@property --sx  { syntax: "<percentage>"; inherits: false; initial-value: -15%; }
+@property --oa1 { syntax: "<number>"; inherits: false; initial-value: 0.40; }
+@property --oa2 { syntax: "<number>"; inherits: false; initial-value: 0.32; }
+@property --oa3 { syntax: "<number>"; inherits: false; initial-value: 0.28; }
+@property --oa4 { syntax: "<number>"; inherits: false; initial-value: 0.30; }
+
+.section--hero {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 28vw 180vh at var(--sx) 50%, rgba(200, 170, 255, 0.09) 0%, transparent 50%),
+    radial-gradient(ellipse 110vw 85vh at var(--ox1) var(--oy1), rgba(52, 12, 175, var(--oa1)) 0%, transparent 52%),
+    radial-gradient(ellipse 95vw 90vh at var(--ox2) var(--oy2), rgba(105, 18, 205, var(--oa2)) 0%, transparent 52%),
+    radial-gradient(ellipse 85vw 75vh at var(--ox3) var(--oy3), rgba(135, 45, 220, var(--oa3)) 0%, transparent 52%),
+    radial-gradient(ellipse 70vw 65vh at var(--ox4) var(--oy4), rgba(65, 8, 160, var(--oa4)) 0%, transparent 52%),
+    radial-gradient(ellipse 220% 170% at 50% 55%, #0d0620 0%, #090519 55%, #0b0a10 100%);
+  animation:
+    sheen 9s ease-in-out infinite alternate,
+    orb1 8s ease-in-out infinite alternate,
+    orb2 6s ease-in-out infinite alternate,
+    orb3 5s ease-in-out infinite alternate,
+    orb4 7s ease-in-out infinite alternate,
+    fade1 11s ease-in-out infinite alternate,
+    fade2  7s ease-in-out infinite alternate,
+    fade3 13s ease-in-out infinite alternate,
+    fade4  9s ease-in-out infinite alternate;
+}
+
+.section--hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='256' height='256' filter='url(%23n)'/></svg>");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.section--hero > * { position: relative; z-index: 2; }
+
+@keyframes sheen { to { --sx: 115%; } }
+@keyframes orb1  { to { --ox1: 82%; --oy1: 15%; } }
+@keyframes orb2  { to { --ox2: 12%; --oy2: 82%; } }
+@keyframes fade1 { to { --oa1: 0.06; } }
+@keyframes fade2 { to { --oa2: 0.04; } }
+@keyframes fade3 { to { --oa3: 0.08; } }
+@keyframes fade4 { to { --oa4: 0.05; } }
+@keyframes orb3  { to { --ox3: 22%; --oy3: 18%; } }
+@keyframes orb4  { to { --ox4: 42%; --oy4: 88%; } }
+
+
 .glassNav {
   position: fixed;
   inset: 0 0 auto;
@@ -86,7 +146,6 @@ body {
   align-items: center;
   text-align: center;
   padding: clamp(1.5rem, 5vw, 3rem);
-  max-width: 40rem;
   margin: 0 auto;
 }
 
@@ -174,12 +233,62 @@ body {
 }
 
 .eyebrow {
-  margin: 0 0 1.25rem;
-  font-size: 0.7rem;
+  margin: 0 0 1rem;
+  font-size: 0.72rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   font-weight: 500;
-  color: #7a756d;
+  color: #6d6580;
+}
+
+.brand-title {
+  margin: 0 0 100px 0px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(3.5rem, 14vw, 8rem);
+  font-weight: 500;
+  font-variation-settings: "opsz" 144;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  background: linear-gradient(
+    110deg,
+    #a78bfa 0%,
+    #c4b5fd 20%,
+    #e0d9ff 40%,
+    #a78bfa 55%,
+    #7c3aed 70%,
+    #c4b5fd 85%,
+    #a78bfa 100%
+  );
+  background-size: 250%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: brandShimmer 5s ease-in-out infinite;
+}
+
+@keyframes brandShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+.hero-pre {
+  margin: 0 0 0.3rem;
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-weight: 300;
+  color: rgba(210, 205, 230, 0.8);
+  letter-spacing: 0.01em;
+}
+
+.hero-accent {
+  margin: 0 0 1.4rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1.35rem, 3.5rem, 5rem);
+  font-weight: 500;
+  font-variation-settings: "opsz" 72;
+  background: linear-gradient(90deg, #60c0ff 0%, #a78bfa 45%, #f472b6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .headline {
@@ -196,8 +305,9 @@ body {
 .lede {
   margin: 0 0 2.25rem;
   font-size: 1.05rem;
-  color: #9a948a;
-  max-width: 22ch;
+  color: #8c87a8;
+  max-width: 46ch;
+  line-height: 1.7;
 }
 
 .cta {

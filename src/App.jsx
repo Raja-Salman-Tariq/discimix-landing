@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import HeroCanvas from "./HeroCanvas.jsx";
 
 const LINKS = [
   ["About", "#about"],
@@ -42,11 +43,17 @@ export default function App() {
           className="section section--hero"
           aria-label="Hero"
         >
-          <p className="eyebrow">Discimix</p>
-          <h1 className="headline">Clarity, distilled.</h1>
-          <p className="lede">A focused product experience. More soon.</p>
+          <HeroCanvas />
+          <h1 className="brand-title">DISCIMIX</h1>
+          <p className="hero-pre">Transform Your Business With Premium</p>
+          <p className="hero-accent">AI Intelligence &amp; Data Insights</p>
+          <p className="lede">
+            Cutting-edge solutions designed for enterprises that demand excellence.
+            Harness the power of artificial intelligence and strategic consulting
+            to accelerate growth and innovation.
+          </p>
           <a className="cta" href="#contact">
-            Get in touch
+            Get started
           </a>
         </section>
 
