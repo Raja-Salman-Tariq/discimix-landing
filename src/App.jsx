@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import HeroCanvas from "./HeroCanvas.jsx";
 import EventsCarousel from "./EventsCarousel.jsx";
-import EventsAmbient from "./EventsAmbient.jsx";
 import ContactRotatingBlurb from "./ContactRotatingBlurb.jsx";
+import ContactForm from "./ContactForm.jsx";
 
 const LINKS = [
   ["About", "#about"],
@@ -306,7 +306,6 @@ export default function App() {
           className="section section--events"
           aria-labelledby="events-heading"
         >
-          <EventsAmbient />
           <h2 id="events-heading" className="section-title">
             Events
           </h2>
@@ -337,31 +336,7 @@ export default function App() {
             <div className="contactFormCol">
               <div className="contactPanelOuter">
                 <div className="contactPanel">
-                  <form
-                    className="contactForm"
-                    onSubmit={(e) => e.preventDefault()}
-                  >
-                    <label>
-                      Name
-                      <input name="name" autoComplete="name" required />
-                    </label>
-                    <label>
-                      Email
-                      <input
-                        type="email"
-                        name="email"
-                        autoComplete="email"
-                        required
-                      />
-                    </label>
-                    <label>
-                      Message
-                      <textarea name="message" rows={4} required />
-                    </label>
-                    <button type="submit" className="cta cta--block cta--panel">
-                      Send message
-                    </button>
-                  </form>
+                  <ContactForm />
                 </div>
               </div>
             </div>

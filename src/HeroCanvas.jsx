@@ -4,6 +4,8 @@ const N = 48;
 const DIST = 240;
 const REPEL_R = 130;
 const MAX_SPEED = 3.5;
+/** Skip most (i,j,k) triples — keeps a hint of mesh fill without O(n³) cost. */
+const TRIANGLE_STRIDE = 2;
 
 function mkVert(w, h) {
   return {
@@ -29,8 +31,9 @@ export default function HeroCanvas() {
   useEffect(() => {
     const canvas = ref.current;
     const ctx = canvas.getContext("2d");
-    let raf;
+    let raf = 0;
     let verts = [];
+    let running = false;
 
     function resize() {
       canvas.width  = canvas.offsetWidth;
@@ -52,6 +55,8 @@ export default function HeroCanvas() {
     canvas.addEventListener("mouseleave", onLeave);
 
     function draw() {
+      if (!running) return;
+
       const { width: w, height: h } = canvas;
       const { x: mx, y: my } = mouse.current;
       ctx.clearRect(0, 0, w, h);
@@ -81,7 +86,9 @@ export default function HeroCanvas() {
         if (v.y > h + 60) v.y = -60;
       }
 
-      // edges + triangles
+      ctx.shadowBlur = 0;
+
+      // edges (+ sparse triangles)
       for (let i = 0; i < N; i++) {
         for (let j = i + 1; j < N; j++) {
           const dij = Math.hypot(verts[i].x - verts[j].x, verts[i].y - verts[j].y);
@@ -89,32 +96,20 @@ export default function HeroCanvas() {
           const aij = 1 - dij / DIST;
           const cij = rgb(((verts[i].x + verts[j].x) / 2) / w);
 
-          // proximity to cursor boosts brightness
           const emx = (verts[i].x + verts[j].x) / 2;
           const emy = (verts[i].y + verts[j].y) / 2;
           const md  = Math.hypot(emx - mx, emy - my);
           const boost = Math.max(0, 1 - md / 180) * 0.7;
 
-          // glow pass
+          // single stroke (replaces glow + crisp passes)
           ctx.beginPath();
           ctx.moveTo(verts[i].x, verts[i].y);
           ctx.lineTo(verts[j].x, verts[j].y);
-          ctx.strokeStyle = `rgba(${cij},${(aij * 0.35) + boost * 0.4})`;
-          ctx.lineWidth = 6 + boost * 6;
-          ctx.shadowColor = `rgba(${cij},${0.8 + boost * 0.2})`;
-          ctx.shadowBlur = 10 + boost * 14;
+          ctx.strokeStyle = `rgba(${cij},${(aij * 0.72) + boost * 0.22})`;
+          ctx.lineWidth = 2.1 + boost * 1.4;
           ctx.stroke();
 
-          // crisp line
-          ctx.beginPath();
-          ctx.moveTo(verts[i].x, verts[i].y);
-          ctx.lineTo(verts[j].x, verts[j].y);
-          ctx.strokeStyle = `rgba(${cij},${(aij * 0.95) + boost * 0.05})`;
-          ctx.lineWidth = 1.2 + boost * 0.8;
-          ctx.shadowBlur = 0;
-          ctx.stroke();
-
-          for (let k = j + 1; k < N; k++) {
+          for (let k = j + TRIANGLE_STRIDE; k < N; k += TRIANGLE_STRIDE) {
             const dik = Math.hypot(verts[i].x - verts[k].x, verts[i].y - verts[k].y);
             const djk = Math.hypot(verts[j].x - verts[k].x, verts[j].y - verts[k].y);
             if (dik > DIST || djk > DIST) continue;
@@ -133,18 +128,15 @@ export default function HeroCanvas() {
         }
       }
 
-      // dots
+      // dots (no shadow — radius carries emphasis near cursor)
       for (const v of verts) {
         const c   = rgb(v.x / w);
         const dd  = Math.hypot(v.x - mx, v.y - my);
         const dot = Math.max(0, 1 - dd / REPEL_R) * 0.6;
         ctx.beginPath();
-        ctx.arc(v.x, v.y, 3.5 + dot * 3, 0, Math.PI * 2);
+        ctx.arc(v.x, v.y, 3.2 + dot * 3.8, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${c},1)`;
-        ctx.shadowColor = `rgba(${c},1)`;
-        ctx.shadowBlur = 8 + dot * 16;
         ctx.fill();
-        ctx.shadowBlur = 0;
       }
 
       // cursor glow bloom
@@ -157,17 +149,45 @@ export default function HeroCanvas() {
         ctx.fillRect(0, 0, w, h);
       }
 
-      raf = requestAnimationFrame(draw);
+      if (running) raf = requestAnimationFrame(draw);
     }
+
+    function setRunning(next) {
+      if (next === running) return;
+      running = next;
+      if (running) {
+        raf = requestAnimationFrame(draw);
+      } else if (raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    }
+
+    const io =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            (entries) => {
+              const hit = entries.some((e) => e.isIntersecting);
+              setRunning(hit);
+            },
+            { root: null, rootMargin: "72px", threshold: 0 }
+          )
+        : null;
 
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
     resize();
-    draw();
+
+    if (io) {
+      io.observe(canvas);
+    } else {
+      setRunning(true);
+    }
 
     return () => {
-      cancelAnimationFrame(raf);
+      setRunning(false);
       ro.disconnect();
+      io?.disconnect();
       canvas.removeEventListener("mousemove", onMove);
       canvas.removeEventListener("mouseleave", onLeave);
     };
