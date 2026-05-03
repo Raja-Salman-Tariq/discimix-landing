@@ -5,6 +5,7 @@
 }
 
 html {
+  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -23,7 +24,61 @@ body {
   min-height: 100dvh;
 }
 
-.shell {
+.glassNav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem clamp(1rem, 4vw, 2rem);
+  background: rgba(12, 11, 10, 0.42);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(245, 242, 236, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.glassNav--on {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.glassNav-brand {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #c4bfb6;
+}
+
+.glassNav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.1rem;
+  justify-content: flex-end;
+}
+
+.glassNav-links a {
+  font-size: 0.78rem;
+  font-weight: 400;
+  text-decoration: none;
+  color: #9a948a;
+  transition: color 0.15s ease;
+}
+
+.glassNav-links a:hover {
+  color: #e8e6e3;
+}
+
+.section {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -33,6 +88,89 @@ body {
   padding: clamp(1.5rem, 5vw, 3rem);
   max-width: 36rem;
   margin: 0 auto;
+}
+
+.section-title {
+  margin: 0 0 0.75rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
+  font-weight: 400;
+  font-variation-settings: "opsz" 72;
+  letter-spacing: -0.02em;
+  color: #f5f2ec;
+}
+
+.scaffold {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: #9a948a;
+}
+
+.section:not(.section--hero) .scaffold:last-child {
+  margin-bottom: 0;
+}
+
+.section:not(.section--hero) .cta {
+  margin-top: 0.25rem;
+}
+
+.section--contact {
+  max-width: 22rem;
+}
+
+.section--contact .section-title,
+.section--contact .scaffold {
+  align-self: center;
+  text-align: center;
+}
+
+.contactForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  text-align: left;
+}
+
+.contactForm label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7a756d;
+}
+
+.contactForm input,
+.contactForm textarea {
+  width: 100%;
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 300;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #f5f2ec;
+  background: rgba(245, 242, 236, 0.04);
+  border: 1px solid rgba(245, 242, 236, 0.1);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.contactForm input:focus-visible,
+.contactForm textarea:focus-visible {
+  outline: 1px solid rgba(232, 228, 220, 0.35);
+  outline-offset: 1px;
+}
+
+.cta--block {
+  width: 100%;
+  margin-top: 0.15rem;
+  border: none;
+  cursor: pointer;
 }
 
 .eyebrow {
